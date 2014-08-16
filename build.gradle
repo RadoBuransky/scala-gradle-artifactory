@@ -1,6 +1,28 @@
+buildscript {
+    repositories {
+        maven {
+            url 'http://localhost:8081/artifactory/plugins-release'
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+        
+    }
+    dependencies {
+        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '3.0.1')
+    }
+}
+
 apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: "com.jfrog.artifactory"
 
 version = '1.0'
+group = 'com.buransky'
+def artifactId = projectDir.name
+def versionNumber = version
 
 repositories {
     mavenCentral()
@@ -12,4 +34,32 @@ dependencies {
 
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.useAnt = false
+}
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'libs-release-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }	
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+}
+
+artifactoryPublish { 
+  dependsOn jar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
