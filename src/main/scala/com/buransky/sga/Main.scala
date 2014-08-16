@@ -7,6 +7,6 @@ import java.util
  */
 object Main {
   def main(args: util.ArrayList[String]): Unit = {
-    println("There's nothing left to do.")
+    println("There's nothing left to do. Again. And again.")
   }
 }

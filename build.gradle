@@ -6,26 +6,23 @@ buildscript {
                 username = "${artifactory_user}"
                 password = "${artifactory_password}"
             }
+            name = "maven-main-cache"
         }
-        
     }
     dependencies {
-        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '3.0.1')
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1"
     }
 }
 
 apply plugin: 'scala'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "com.jfrog.artifactory"
 
-version = '1.0'
+version = '1.0.0-SNAPSHOT'
 group = 'com.buransky'
-def artifactId = projectDir.name
-def versionNumber = version
 
 repositories {
-    mavenCentral()
+    add buildscript.repositories.getByName("maven-main-cache")
 }
 
 dependencies {
@@ -37,10 +34,10 @@ tasks.withType(ScalaCompile) {
 }
 
 artifactory {
-    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    contextUrl = "${artifactory_contextUrl}"
     publish {
         repository {
-            repoKey = 'libs-release-local'
+            repoKey = 'libs-snapshot-local'
             username = "${artifactory_user}"
             password = "${artifactory_password}"
             maven = true
@@ -50,10 +47,6 @@ artifactory {
             publications ('mavenJava')
         }
     }
-}
-
-artifactoryPublish { 
-  dependsOn jar
 }
 
 publishing {
